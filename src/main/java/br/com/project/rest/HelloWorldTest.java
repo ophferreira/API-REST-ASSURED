@@ -1,7 +1,13 @@
 package br.com.project.rest;
 
 import static io.restassured.RestAssured.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -40,5 +46,26 @@ public class HelloWorldTest {
 	@Test
 	public void usandoGerkinCucumber() {
 		given().when().get("http://restapi.wcaquino.me/ola").then().statusCode(STATUS_200);
+	}
+	
+	@Test
+	public void usandoMatchersHamcrest() {
+		assertThat(21, is(21));
+		assertThat(21, isA(Integer.class));
+		assertThat(21d, isA(Double.class));
+		assertThat(21, greaterThan(20)); //Verifica se é maior
+		assertThat(21, lessThan(22)); //Verifica se é menor
+		
+		List<Integer> impares = Arrays.asList(1,3,5,7,9);
+		
+		assertThat(impares, hasSize(5)); //Verifica o tamanho da lista
+		assertThat(impares, contains(1,3,5,7,9)); //Verifica se contém os valores
+		assertThat(impares, hasItem(3)); //Verifica se contém o valor na lista
+		
+		assertThat("Mariah", is(not("John")));
+		assertThat("Mariah", not("John")); //Funciona da mesma forma sem o is
+		
+		assertThat("Mariah", anyOf(is("Mariah"), is("John"))); //Condicional OU
+		assertThat("Mariah", allOf(startsWith("Ma"), endsWith("ah"), containsString("ri"))); // Condicional E
 	}
 }
