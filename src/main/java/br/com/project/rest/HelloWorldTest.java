@@ -68,4 +68,16 @@ public class HelloWorldTest {
 		assertThat("Mariah", anyOf(is("Mariah"), is("John"))); //Condicional OU
 		assertThat("Mariah", allOf(startsWith("Ma"), endsWith("ah"), containsString("ri"))); // Condicional E
 	}
+	
+	@Test
+	public void validarBody() {
+		given()
+		.when()
+			.get("http://restapi.wcaquino.me/ola")
+		.then()
+			.statusCode(STATUS_200) //Verifica se o status code é 200
+			.body(is("Ola Mundo!")) //Verifica se contém Ola Mundo no body
+			.body(containsString("Mundo")) //Verifica se contém a string
+			.body(is(not(nullValue())));
+	}
 }
