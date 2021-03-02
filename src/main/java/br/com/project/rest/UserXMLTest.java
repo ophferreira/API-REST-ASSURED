@@ -3,7 +3,12 @@ package br.com.project.rest;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
+import java.util.ArrayList;
+
+import org.junit.Assert;
 import org.junit.Test;
+
+import io.restassured.internal.path.xml.NodeImpl;
 
 
 public class UserXMLTest {
@@ -27,7 +32,49 @@ public class UserXMLTest {
 			.body("name[0]", is("Zezinho"))
 			.body("name[1]", is("Luizinho"))
 			.body("name", hasItem("Luizinho"))
-			.body("name", hasItems("Zezinho", "Luizinho"))
-		;
+			.body("name", hasItems("Zezinho", "Luizinho"));
+	}
+	
+	@Test
+	public void pesquisasAvancadasComXML() {
+		given()
+		.when()
+			.get("http://restapi.wcaquino.me/usersXML")
+		.then()
+			.statusCode(STATUS_200)
+			.body("users.user.size()", is(3))
+			.body("users.user.findAll{it.age.toInteger() <= 25}.size()", is(2))
+			.body("users.user.@id", hasItems("1", "2", "3"))
+			.body("users.user.find{it.age == 25}.name", is("Maria Joaquina"))
+			.body("users.user.findAll{it.name.toString().contains('n')}.name", hasItems("Maria Joaquina", "Ana Julia")) //No XML tem que "Forçar" a dizer que é uma String
+			.body("users.user.salary.find{it != null}.toDouble()", is(1234.5678))
+			.body("users.user.age.collect{it.toInteger() * 2}", hasItems(40, 50, 60))
+			.body("users.user.name.findAll{it.toString().startsWith('Maria')}.collect{it.toString().toUpperCase()}", is("MARIA JOAQUINA"));
+	}
+	
+	@Test
+	public void pesquisasAvancadasComXMLEJava() {
+		String nome = given()
+		.when()
+			.get("http://restapi.wcaquino.me/usersXML")
+		.then()
+			.statusCode(STATUS_200)
+			.extract().path("users.user.name.findAll{it.toString().startsWith('Maria')}");
+		
+		Assert.assertEquals("Maria Joaquina".toUpperCase(), nome.toUpperCase());
+	}
+	
+	@Test
+	public void pesquisasAvancadasComXMLEJavaArray() {
+		ArrayList<NodeImpl> nomes = given()
+		.when()
+			.get("http://restapi.wcaquino.me/usersXML")
+		.then()
+			.statusCode(STATUS_200)
+			.extract().path("users.user.name.findAll{it.toString().contains('n')}");
+		
+		Assert.assertEquals(2, nomes.size());
+		Assert.assertEquals("Maria Joaquina".toUpperCase(), nomes.get(0).toString().toUpperCase());
+		Assert.assertTrue("ANA JULIA".equalsIgnoreCase(nomes.get(1).toString()));
 	}
 }
