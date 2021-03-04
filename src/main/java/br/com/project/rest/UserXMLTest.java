@@ -77,4 +77,20 @@ public class UserXMLTest {
 		Assert.assertEquals("Maria Joaquina".toUpperCase(), nomes.get(0).toString().toUpperCase());
 		Assert.assertTrue("ANA JULIA".equalsIgnoreCase(nomes.get(1).toString()));
 	}
+	
+	@Test
+	public void pesquisasAvancadasComXPath() {
+		given()
+		.when()
+			.get("http://restapi.wcaquino.me/usersXML")
+		.then()
+			.statusCode(STATUS_200)
+			.body(hasXPath("count(/users/user)", is("3")))
+			.body(hasXPath("/users/user[@id = '1']"))
+			.body(hasXPath("//user[@id = '2']"))
+			.body(hasXPath("//name[contains(text(),'Luizinho')]/../../name", is("Ana Julia")))
+			.body(hasXPath("//name[text() = 'Ana Julia']/following-sibling::filhos", allOf(containsString("Zezinho"), containsString("Luizinho"))))
+			.body(hasXPath("/users/user[last()]/name", is("Ana Julia")))
+		;
+	}
 }
