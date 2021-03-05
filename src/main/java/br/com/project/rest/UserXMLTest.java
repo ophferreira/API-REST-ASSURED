@@ -6,8 +6,10 @@ import static org.hamcrest.Matchers.*;
 import java.util.ArrayList;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import io.restassured.RestAssured;
 import io.restassured.internal.path.xml.NodeImpl;
 
 
@@ -17,11 +19,18 @@ public class UserXMLTest {
 	public int STATUS_201 = 201; //STATUS CODE 201
 	public int STATUS_404 = 404; //STATUS CODE 404
 	
+	@BeforeClass
+	public static void setup() {
+		RestAssured.baseURI = "http://restapi.wcaquino.me";
+//		RestAssured.port = 443;
+//		RestAssured.basePath = "/v2";
+	}
+	
 	@Test
 	public void trabalhandoComXML() {
 		given() //Condição
 		.when()
-			.get("http://restapi.wcaquino.me/usersXML/3")
+			.get("/usersXML/3")
 		.then()
 			.statusCode(STATUS_200)
 			.rootPath("user")
@@ -39,7 +48,7 @@ public class UserXMLTest {
 	public void pesquisasAvancadasComXML() {
 		given()
 		.when()
-			.get("http://restapi.wcaquino.me/usersXML")
+			.get("/usersXML")
 		.then()
 			.statusCode(STATUS_200)
 			.body("users.user.size()", is(3))
@@ -56,7 +65,7 @@ public class UserXMLTest {
 	public void pesquisasAvancadasComXMLEJava() {
 		String nome = given()
 		.when()
-			.get("http://restapi.wcaquino.me/usersXML")
+			.get("/usersXML")
 		.then()
 			.statusCode(STATUS_200)
 			.extract().path("users.user.name.findAll{it.toString().startsWith('Maria')}");
@@ -68,7 +77,7 @@ public class UserXMLTest {
 	public void pesquisasAvancadasComXMLEJavaArray() {
 		ArrayList<NodeImpl> nomes = given()
 		.when()
-			.get("http://restapi.wcaquino.me/usersXML")
+			.get("/usersXML")
 		.then()
 			.statusCode(STATUS_200)
 			.extract().path("users.user.name.findAll{it.toString().contains('n')}");
@@ -82,7 +91,7 @@ public class UserXMLTest {
 	public void pesquisasAvancadasComXPath() {
 		given()
 		.when()
-			.get("http://restapi.wcaquino.me/usersXML")
+			.get("/usersXML")
 		.then()
 			.statusCode(STATUS_200)
 			.body(hasXPath("count(/users/user)", is("3")))
