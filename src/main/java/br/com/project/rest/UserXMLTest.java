@@ -30,8 +30,6 @@ public class UserXMLTest {
 	@BeforeClass
 	public static void setup() {
 		RestAssured.baseURI = "http://restapi.wcaquino.me";
-//		RestAssured.port = 443;
-//		RestAssured.basePath = "/v2";
 		
 		RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
 		reqBuilder.log(LogDetail.ALL);

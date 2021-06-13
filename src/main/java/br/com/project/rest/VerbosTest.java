@@ -39,6 +39,8 @@ public class VerbosTest {
 	
 	@Test
 	public void saveUserXML() {
+
+
 		given()
 			.log().all()
 			.contentType(ContentType.XML)
@@ -49,5 +51,37 @@ public class VerbosTest {
 			.log().all()
 			.statusCode(201)
 			.body("user.name", is("Pedro Ferreira"));
+	}
+	
+	@Test
+	public void changeUser() {
+		given()
+			.log().all()
+			.contentType(ContentType.JSON)
+			.body("{\"name\":\"New User\",\"age\":20}")
+		.when()
+			.put("https://restapi.wcaquino.me/users/1")
+		.then()
+			.log().all()
+			.statusCode(200)
+			.body("name", is("New User"))
+			.body("age", is(20));
+	}
+	
+	@Test
+	public void customURL() {
+		given()
+			.log().all()
+			.contentType(ContentType.JSON)
+			.body("{\"name\":\"New User\",\"age\":20}")
+			.pathParam("entidade", "users")
+			.pathParam("userID", 1)
+		.when()
+			.put("https://restapi.wcaquino.me/{entidade}/{userID}")
+		.then()
+			.log().all()
+			.statusCode(200)
+			.body("name", is("New User"))
+			.body("age", is(20));
 	}
 }
