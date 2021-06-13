@@ -84,4 +84,26 @@ public class VerbosTest {
 			.body("name", is("New User"))
 			.body("age", is(20));
 	}
+	
+	@Test
+	public void deleteUser() {
+		given()
+			.log().all()
+		.when()
+			.delete("https://restapi.wcaquino.me/users/1")
+		.then()
+			.log().all()
+			.statusCode(204);
+	}
+	
+	@Test
+	public void noDeleteUserNonexistent() {
+		given()
+			.log().all()
+		.when()
+			.delete("https://restapi.wcaquino.me/users/1000")
+		.then()
+			.log().all()
+			.statusCode(400);
+	}
 }
