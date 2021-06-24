@@ -2,9 +2,14 @@ package br.com.project.rest;
 
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
 
+import br.com.project.rest.Objects.User;
 import io.restassured.http.ContentType;
 
 public class VerbosTest {
@@ -24,6 +29,60 @@ public class VerbosTest {
 	}
 	
 	@Test
+	public void saveUserJsonMap() {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("name", "User via Map");
+		params.put("age", 23);
+		
+		given()
+			.log().all()
+			.contentType(ContentType.JSON)
+			.body(params)
+		.when()
+			.post("http://restapi.wcaquino.me/users")
+		.then()
+			.log().all()
+			.statusCode(201)
+			.body("name", is("User via Map"));
+	}
+	
+	@Test
+	public void saveUserJsonObject() {
+		User user = new User("User via Object", 30, 2.356);
+		
+		given()
+			.log().all()
+			.contentType(ContentType.JSON)
+			.body(user)
+		.when()
+			.post("http://restapi.wcaquino.me/users")
+		.then()
+			.log().all()
+			.statusCode(201)
+			.body("name", is("User via Object"));
+	}
+	
+	@Test
+	public void DeserialzarObjectSaveUserJson() {
+		User user = new User("User Deserializado", 30, 2.356);
+		
+		User userInsert = given()
+			.log().all()
+			.contentType(ContentType.JSON)
+			.body(user)
+		.when()
+			.post("http://restapi.wcaquino.me/users")
+		.then()
+			.log().all()
+			.statusCode(201)
+			.extract().body().as(User.class);
+		
+		System.out.println(userInsert);
+		assertEquals("User Deserializado", userInsert.getName());
+		
+	}
+	
+	@Test
 	public void noSaveUser() {
 		given()
 		.log().all()
@@ -39,8 +98,6 @@ public class VerbosTest {
 	
 	@Test
 	public void saveUserXML() {
-
-
 		given()
 			.log().all()
 			.contentType(ContentType.XML)
