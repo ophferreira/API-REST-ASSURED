@@ -111,6 +111,39 @@ public class VerbosTest {
 	}
 	
 	@Test
+	public void saveUserXMLUsingObject() {
+		User user = new User("User XML", 30, 30.234);
+		
+		given()
+			.log().all()
+			.contentType(ContentType.XML)
+			.body(user)
+		.when()
+			.post("http://restapi.wcaquino.me/usersXML")
+		.then()
+			.log().all()
+			.statusCode(201)
+			.body("user.name", is("User XML"));
+	}
+	
+	@Test
+	public void deserializarObjectSaveUserXML() {
+		User user = new User("User XML", 30, 30.234);
+		
+		given()
+			.log().all()
+			.contentType(ContentType.XML)
+			.body(user)
+		.when()
+			.post("http://restapi.wcaquino.me/usersXML")
+		.then()
+			.log().all()
+			.statusCode(201)
+			.extract().body().as(User.class);
+
+	}
+	
+	@Test
 	public void changeUser() {
 		given()
 			.log().all()
